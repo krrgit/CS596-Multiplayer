@@ -1,4 +1,5 @@
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEditor;
 using Random = UnityEngine.Random;
@@ -71,7 +72,8 @@ public class DungeonGenerator : MonoBehaviour
                 
                 if (roomPrefab > RoomType.DNE)
                 {
-                    var go = Instantiate(rooms[(int)roomPrefab], position, quaternion.identity);
+                    var go = PrefabUtility.InstantiatePrefab(rooms[(int)roomPrefab]).GameObject();
+                    go.transform.position = position;
                     go.transform.parent = transform;
 
                     int pluggedDoors = GetPluggedDoors(i, j);

@@ -8,6 +8,7 @@ using UnityEngine;
 public class PlayerAttack : NetworkBehaviour
 {
     [SerializeField] private PlayerMove playerMove;
+    [SerializeField] private Animator animator;
     [Header("Sword")]
     [SerializeField] private bool canSword;
     [SerializeField] private float swordAttackTimer = 1.5f;
@@ -65,10 +66,10 @@ public class PlayerAttack : NetworkBehaviour
             // StartCoroutine(ISwingSword());
         }
 
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            StartCoroutine(IChargeBow());
-        }
+        // if (Input.GetKeyDown(KeyCode.Q))
+        // {
+        //     StartCoroutine(IChargeBow());
+        // }
 
         if (Input.GetKeyDown(KeyCode.R))
         {
@@ -108,10 +109,17 @@ public class PlayerAttack : NetworkBehaviour
     IEnumerator ISwingSword()
     {
         attackActive = true;
+        animator.Play("SpinAttack");
+        // Startup
+        yield return new WaitForSeconds(0.15f);
+        
+        // Swing
         swordHitbox.SetActive(true);
-        yield return new WaitForSeconds(swordAttackTimer);
-        attackActive = false;
+        yield return new WaitForSeconds(0.3f);
         swordHitbox.SetActive(false);
+        // Wind Down
+        yield return new WaitForSeconds(0.1f);
+        attackActive = false;
     }
 
     IEnumerator IHoldBomb()

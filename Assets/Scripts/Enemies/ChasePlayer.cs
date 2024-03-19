@@ -9,7 +9,7 @@ public class ChasePlayer : MonoBehaviour
     [SerializeField] private float randRadiusOffset = 0.25f;
     [SerializeField] private Rigidbody rb;
     [SerializeField] private Transform player; // TODO: change to nearest player every now and then
-    
+    [SerializeField] private Transform model;
     private Vector3 moveDirLerped;
 
     private Vector3 randomVector; 
@@ -40,8 +40,16 @@ public class ChasePlayer : MonoBehaviour
         direction.y = 0;
         direction = direction.normalized;
         
+        
+        
         moveDirLerped = Vector3.Lerp(moveDirLerped, direction, moveLerpSpeed * Time.deltaTime);
         rb.velocity = moveSpeed * moveDirLerped;
+
+        // Change Face Position
+        if (model)
+        {
+            model.transform.forward = moveDirLerped;
+        }
     }
 
     public void SetTarget(Transform target)
