@@ -1,10 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class BossMove : MonoBehaviour
+public class BossMove : NetworkBehaviour
 {
     [SerializeField] private bool allowMove = false;
     [SerializeField] private float moveSpeed = 5;
@@ -25,6 +26,7 @@ public class BossMove : MonoBehaviour
     private void Update()
     {
         if (!allowMove) return;
+        if (!IsOwner) return;
          transform.position += moveSpeed * Time.deltaTime * direction;
     }
 
@@ -35,7 +37,6 @@ public class BossMove : MonoBehaviour
 
     private void OnCollisionStay(Collision collision)
     {
-        print("Collide");
         if (!collision.gameObject.CompareTag("BossWall")) return;
         
         print("Collide with Wall");

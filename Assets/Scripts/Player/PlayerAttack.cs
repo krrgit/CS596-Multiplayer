@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerAttack : NetworkBehaviour
@@ -95,12 +96,10 @@ public class PlayerAttack : NetworkBehaviour
         // Spawn Arrow
         Vector3 spawnPos = transform.position + playerMove.FaceDirection;
         spawnPos.y = 0.5f;
-        var go = Instantiate(arrowPrefab, spawnPos, Quaternion.identity);
-        go.transform.forward = playerMove.FaceDirection;
-        var arrow = go.AddComponent<Arrow>();
-        arrow.Init(minBowTargets +
-                             (Mathf.FloorToInt((chargeTimer / maxBowChargeTime) * (maxBowTargets - minBowTargets))), arrowSpeed);
-
+        int limit = minBowTargets +
+                    (Mathf.FloorToInt((chargeTimer / maxBowChargeTime) * (maxBowTargets - minBowTargets)));
+        RequestArrowServerRpc(spawnPos, playerMove.FaceDirection, limit, arrowSpeed);
+            
         // Cooldown before able to attack
         yield return new WaitForSeconds(arrowCooldown);
         attackActive = false;
@@ -120,8 +119,9 @@ public class PlayerAttack : NetworkBehaviour
         attackActive = true;
         
         // Spawn Bomb
-        var go = Instantiate(bombPrefab, itemParent.position, quaternion.identity);
-        go.transform.parent = itemParent;
+        // var go = Instantiate(bombPrefab, itemParent.position, quaternion.identity);
+        // go.transform.parent = itemParent;
+        RequestBombSpawnServerRpc();
         yield return new WaitForSeconds(0.2f);
 
         float timer = bombLifetime;
@@ -141,14 +141,20 @@ public class PlayerAttack : NetworkBehaviour
             attackActive = false;
             yield return null;
         }
+        else
+        {
+            // Throw
+            RequestBombThrowServerRpc(playerMove.FaceDirection);
+
+        }
 
         // Throw
-        if (go)
-        {
-            go.transform.parent = null;
-            var bomb = go.GetComponent<Bomb>();
-            bomb.ThrowBomb(playerMove.FaceDirection);
-        }
+        // if (go)
+        // {
+        //     go.transform.parent = null;
+        //     var bomb = go.GetComponent<Bomb>();
+        //     bomb.ThrowBomb(playerMove.FaceDirection);
+        // }
         
         attackActive = false;
     }
@@ -166,6 +172,60 @@ public class PlayerAttack : NetworkBehaviour
     }
     
     // Arrow
+    [ServerRpc]
+    void RequestArrowServerRpc(Vector3 spawnPos, Vector3 faceDirection, int limit, float speed)
+    {
+        ArrowClientRpc(spawnPos, faceDirection, limit, speed);
+    }
+    [ClientRpc]
+    void ArrowClientRpc(Vector3 spawnPos, Vector3 faceDirection, int limit, float speed)
+    {
+        SpawnArrow(spawnPos, faceDirection, limit, speed);
+    }
+    
+    void SpawnArrow(Vector3 spawnPos, Vector3 faceDirection, int limit, float speed) 
+    {
+        var go = Instantiate(arrowPrefab, spawnPos, Quaternion.identity);
+        go.transform.forward = faceDirection;
+        var arrow = go.AddComponent<Arrow>();
+        arrow.Init(limit, speed);
+    }
     
     // Bomb
+    [ServerRpc]
+    void RequestBombSpawnServerRpc()
+    {
+        BombSpawnClientRpc();
+    }
+    [ClientRpc]
+    void BombSpawnClientRpc()
+    {
+        SpawnBomb();
+    }
+
+    void SpawnBomb()
+    {
+        var go = Instantiate(bombPrefab, itemParent.position, quaternion.identity);
+        go.transform.parent = itemParent;
+    }
+    
+    [ServerRpc]
+    void RequestBombThrowServerRpc(Vector3 direction)
+    {
+        BombThrowClientRpc(direction);
+    }
+    [ClientRpc]
+    void BombThrowClientRpc(Vector3 direction)
+    {
+        ThrowBomb(direction);
+    }
+
+    void ThrowBomb(Vector3 direction)
+    {
+        
+        var go = itemParent.GetChild(0);
+        go.transform.parent = null;
+        var bomb = go.GetComponent<Bomb>();
+        bomb.ThrowBomb(direction);
+    }
 }

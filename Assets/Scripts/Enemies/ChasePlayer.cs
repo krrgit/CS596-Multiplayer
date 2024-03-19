@@ -18,26 +18,34 @@ public class ChasePlayer : MonoBehaviour
     void Start()
     {
         if (!rb) rb = GetComponent<Rigidbody>();
-        player = GameObject.Find("PlayerObj").transform;
+        // player = GameObject.Find("PlayerObj").transform;
         randomVector = Vector3.ClampMagnitude(new Vector3(Random.Range(-1f, 1f), 0, Random.Range(-1f, 1f)), randRadiusOffset);
         
         
         // Start off Moving
-        Vector3 direction = player.position - transform.position + randomVector;
-        direction.y = 0;
-        direction = direction.normalized;
-        moveDirLerped = direction;
+        if (player)
+        {
+            Vector3 direction = player.position - transform.position + randomVector;
+            direction.y = 0;
+            direction = direction.normalized;
+            moveDirLerped = direction;
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        if (!player) return;
         Vector3 direction = player.position - transform.position + randomVector;
         direction.y = 0;
         direction = direction.normalized;
         
         moveDirLerped = Vector3.Lerp(moveDirLerped, direction, moveLerpSpeed * Time.deltaTime);
         rb.velocity = moveSpeed * moveDirLerped;
+    }
+
+    public void SetTarget(Transform target)
+    {
+        player = target;
     }
 }

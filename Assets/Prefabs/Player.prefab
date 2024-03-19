@@ -465,7 +465,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5414489859161212517}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.3, z: 0.75}
+  m_LocalPosition: {x: 0, y: 2.4, z: 0.75}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -569,7 +569,7 @@ MonoBehaviour:
   maxBowChargeTime: 2
   arrowCooldown: 0.5
   arrowSpeed: 7
-  arrowShortStartup: 0.1
+  arrowShortStartup: 0.05
   arrowPrefab: {fileID: 4641578575176950739, guid: a25fd0cd23ae04245b27b1398a95cdcd, type: 3}
   bombCount: 0
   bombLifetime: 3

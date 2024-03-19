@@ -35,20 +35,23 @@ public class RoomManager : MonoBehaviour
         doors.SetActive(false);
     }
 
-    public void StartRoom()
+    public void StartRoom(Transform triggerPlayer)
     {
         if (roomCleared) return;
         roomActive = true;
+        print("RoomManager: Started");
         if (spawner)
         {
             spawner.SetOpenDoors(openDoors);
-            spawner.gameObject.SetActive(true);
+            spawner.SetTriggerPlayer(triggerPlayer);
+            spawner.StartSpawning();
+            // spawner.gameObject.SetActive(true);
         }
         if (activeRoomElements) activeRoomElements.SetActive(true);
         if (doors) doors.SetActive(true);
         if (clearedRoomElements) clearedRoomElements.SetActive(false);
         
-        print("Start Room");
+        
     }
 
     public void ClearRoom()

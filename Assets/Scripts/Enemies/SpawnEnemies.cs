@@ -1,15 +1,18 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.BossRoom.Infrastructure;
+using Unity.Netcode;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
-public class SpawnEnemies : MonoBehaviour
+public class SpawnEnemies : NetworkBehaviour
 {
-    [SerializeField] GameObject objectToSpawn; // The GameObject to spawn
+    [SerializeField] GameObject prefab; // The GameObject to spawn
     [SerializeField] float width = 10f; // Width of the rectangle
     [SerializeField] float height = 5f; // Height of the rectangle
     [SerializeField] private float doorWidth = 3f;
     [SerializeField] Vector3 center = Vector3.zero; // Center of the rectangle
-    [SerializeField] float spawnInterval = 2f; // Time interval between spawns
     [SerializeField] float waveInterval = 5f; // Time interval between waves
     [SerializeField] private bool waveActive = true;
     [SerializeField] private int totalWaves = 5;
@@ -23,19 +26,46 @@ public class SpawnEnemies : MonoBehaviour
     [SerializeField] private int minWaveCount = 1;
     [SerializeField] private int maxWaveCount = 5;
 
-    private float timer; // Timer for spawn intervals
+    [SerializeField] private NetworkVariable<int> _wavesLeft = new(writePerm: NetworkVariableWritePermission.Owner);
 
+    [SerializeField] private Transform targetPlayer;
+
+    private bool roomStarted;
     public delegate void EnemiesCleared();
     public EnemiesCleared enemiesClearedDelegate;
 
+    private void Awake()
+    {
+        // if (NetworkObject.IsOwnedByServer) NetworkObject.Spawn();
+    }
+
+    public void SetTriggerPlayer(Transform triggerPlayer)
+    {
+        print("SpawnEnemies: Set Target");
+        targetPlayer = triggerPlayer;
+    }
+
     void Start()
     {
-        timer = spawnInterval;
+        
+    }
+
+    public void StartSpawning()
+    {
         RandomizeWaveInterval();
         totalWaves = Random.Range(minWaveCount, maxWaveCount + 1);
         wavesLeft = totalWaves;
-        
-        StartCoroutine(ISpawnWave());
+        roomStarted = true;
+
+        if (IsOwner)
+        {
+            StartCoroutine(ISpawnWave());
+            print("Started server spawn");
+        }
+        else
+        {
+            print("The other client started spawn");
+        }
     }
 
     void RandomizeWaveInterval()
@@ -45,25 +75,37 @@ public class SpawnEnemies : MonoBehaviour
 
     void Update()
     {
-        timer -= Time.deltaTime;
-        
-        if (spawnInterval !=0 && timer <= 0f)
-        {
-            SpawnEnemy(RandomizePosition());
-            timer = spawnInterval;
-        }
-
         ClearRoomCheck();
     }
 
     void ClearRoomCheck()
     {
+        if (!IsOwner) return;
+        
+        if (!roomStarted) return;
         if (wavesLeft > 0) return;
         if (!enemiesCleared && transform.childCount <= 0)
         {
-            enemiesCleared = true;
-            enemiesClearedDelegate();
+            RequestClearServerRpc();
         }
+    }
+    
+    [ServerRpc]
+    void RequestClearServerRpc()
+    {
+        ClearClientRpc();
+    }
+    [ClientRpc]
+    void ClearClientRpc()
+    {
+        MarkRoomCleared();
+    }
+
+    void MarkRoomCleared()
+    {
+        enemiesCleared = true;
+        enemiesClearedDelegate();
+        wavesLeft = 0;
     }
 
     void SpawnEnemy(Vector3 position)
@@ -72,9 +114,15 @@ public class SpawnEnemies : MonoBehaviour
         Vector3 spawnPosition = transform.position + center + position;
 
         // Instantiate the object at the calculated position
-        var go = Instantiate(objectToSpawn, spawnPosition, Quaternion.identity);
-        go.transform.parent = transform;
+        NetworkObject obj =
+            NetworkObjectPool.Singleton.GetNetworkObject(prefab, spawnPosition, Quaternion.identity);
+
+        obj.GetComponent<EnemyHealth>().prefab = prefab;
+        if (!obj.IsSpawned) obj.Spawn(true);
+        obj.transform.parent = transform;
+        obj.GetComponent<ChasePlayer>().SetTarget(targetPlayer);
     }
+    
 
     public void SetOpenDoors(int openDoors)
     {

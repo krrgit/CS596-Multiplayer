@@ -28,6 +28,7 @@ public class PlayerMove : NetworkBehaviour
         {
             enabled = false;
             thisCamera.enabled = false;
+            thisCamera.GetComponent<AudioListener>().enabled = false;
             return;
         }
         transform.position = PlayerSpawnPointManager.Instance.GetSpawnPoint();

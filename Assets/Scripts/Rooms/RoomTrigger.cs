@@ -23,7 +23,8 @@ public class RoomTrigger : MonoBehaviour
             return;
         }
 
-        roomManager.StartRoom();
+        print("RoomTrigger: Triggered");
+        roomManager.StartRoom(other.transform);
         gameObject.SetActive(false);
     }
 }

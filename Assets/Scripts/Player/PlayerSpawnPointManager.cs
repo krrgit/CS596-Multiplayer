@@ -1,12 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
-public class PlayerSpawnPointManager : MonoBehaviour
+public class PlayerSpawnPointManager : NetworkBehaviour
 {
     [SerializeField] private Transform[] spawnPoints;
-    [SerializeField] private int currentSpawnPoint;
+    [SerializeField] private NetworkVariable<int> netSpawnPoint;
     public static PlayerSpawnPointManager Instance;
 
     private void Awake()
@@ -20,12 +21,23 @@ public class PlayerSpawnPointManager : MonoBehaviour
             Destroy(this);
         }
     }
-
     public Vector3 GetSpawnPoint()
     {
-        Vector3 position = spawnPoints[currentSpawnPoint++].position;
-
-        currentSpawnPoint = currentSpawnPoint >= spawnPoints.Length ? 0 : currentSpawnPoint;
-        return position;
+        if (NetworkObject.IsOwner)
+        {
+            int current = netSpawnPoint.Value;
+            Vector3 position = spawnPoints[current++].position;
+            
+            current = current >= spawnPoints.Length ? 0 : current;
+            netSpawnPoint.Value = current;
+            print("Update Spawn point");
+            return position;
+        }
+        else
+        {
+            int current = netSpawnPoint.Value;
+            print("Don't Update Spawn Point");
+            return spawnPoints[current].position;
+        }
     }
 }
