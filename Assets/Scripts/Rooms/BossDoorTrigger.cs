@@ -39,6 +39,7 @@ public class BossDoorTrigger : MonoBehaviour
     {
         topDoor.SetActive(false);
         doorUnlocked = true;
+        SoundManager.Instance.PlayClip("explosion02");
         print("Boss Room Unlocked");
     }
 }

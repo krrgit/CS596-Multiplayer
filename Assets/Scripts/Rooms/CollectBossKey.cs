@@ -17,6 +17,7 @@ public class CollectBossKey : MonoBehaviour
 
     IEnumerator CollectAnim()
     {
+        SoundManager.Instance.PlayClip("coin01");
         yield return new WaitForSeconds(1.2f);
         Destroy(gameObject);
     }

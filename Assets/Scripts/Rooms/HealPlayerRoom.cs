@@ -8,6 +8,6 @@ public class HealPlayerRoom : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (!other.CompareTag("Player")) return;
-        other.GetComponent<PlayerHealth>().RestoreMaxHealth();
+        other.transform.parent.GetComponent<PlayerHealth>().RestoreMaxHealth();
     }
 }

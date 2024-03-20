@@ -34,6 +34,7 @@ public class BombExplosion : MonoBehaviour
 
         // Animate Hold
         transform.localScale = Vector3.one * maxSize;
+        SoundManager.Instance.PlayClip("explosion03");
         yield return new WaitForSeconds(maxDur);
         
         // Animate downsize

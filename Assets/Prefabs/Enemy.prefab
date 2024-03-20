@@ -250,7 +250,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd79953bdb02b4aa680feabe03df4de4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 3
+  moveSpeed: 4
   moveLerpSpeed: 1
   randRadiusOffset: 1
   rb: {fileID: 8913426392139132301}

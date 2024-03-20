@@ -18,6 +18,7 @@ public class DealEnemyDamage : MonoBehaviour
         {
             enemy.DealDamage(damage);
             hitDelegate?.Invoke();
+            SoundManager.Instance.PlayClip("damage03");
         }
 
     }

@@ -12,6 +12,7 @@ public class BossFightManager : MonoBehaviour
     [SerializeField] private int speedIncrease = 1;
     [SerializeField] private EnemyHealth enemyHealth;
     [SerializeField] private BossMove bossMove;
+    [SerializeField] private GameObject fireworks;
 
     private void OnEnable()
     {
@@ -28,6 +29,7 @@ public class BossFightManager : MonoBehaviour
     void Start()
     {
         hittableSegment = segments.Length - 1;
+        fireworks.SetActive(false);
         // for (int i = 0; i < segments.Length; i++)
         // {
         //     segments[i].enabled = i == hittableSegment;
@@ -57,6 +59,7 @@ public class BossFightManager : MonoBehaviour
         else
         {
             // End Game
+            fireworks.SetActive(true);
             print("Boss Defeated");
         }
     }

@@ -31,6 +31,7 @@ public class DealPlayerDamage : MonoBehaviour
         {
             player.DealDamage(damage);
             hitDelegate?.Invoke();
+            SoundManager.Instance.PlayClip("damage02");
         }
     }
 }

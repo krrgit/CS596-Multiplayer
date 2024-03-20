@@ -48,7 +48,11 @@ public class RoomManager : MonoBehaviour
             // spawner.gameObject.SetActive(true);
         }
         if (activeRoomElements) activeRoomElements.SetActive(true);
-        if (doors) doors.SetActive(true);
+        if (doors)
+        {
+            doors.SetActive(true);
+            SoundManager.Instance.PlayClip("door");
+        }
         if (clearedRoomElements) clearedRoomElements.SetActive(false);
         
         
@@ -57,7 +61,11 @@ public class RoomManager : MonoBehaviour
     public void ClearRoom()
     {
         if (spawner) spawner.gameObject.SetActive(false);
-        if (doors) doors.SetActive(false);
+        if (doors)
+        {
+            doors.SetActive(false);
+            SoundManager.Instance.PlayClip("door");
+        }
         if (clearedRoomElements) clearedRoomElements.SetActive(true);
         roomActive = false;
         roomCleared = true;

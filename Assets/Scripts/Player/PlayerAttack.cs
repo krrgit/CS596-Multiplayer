@@ -110,6 +110,7 @@ public class PlayerAttack : NetworkBehaviour
     {
         attackActive = true;
         animator.Play("SpinAttack");
+        SoundManager.Instance.PlayClip("swoosh");
         // Startup
         yield return new WaitForSeconds(0.15f);
         

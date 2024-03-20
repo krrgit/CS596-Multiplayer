@@ -24,8 +24,11 @@ public class PlayerHealth : NetworkBehaviour
     public void RestoreMaxHealth()
     {
         if (!IsOwner) return;
-        health.Value = maxHealth;
+        if (health.Value == maxHealth) return;
         
+        health.Value = maxHealth;
+        playerTakeDamageDelegate?.Invoke(health.Value);
+        SoundManager.Instance.PlayClip("powerup03");
         print("Restored Max Health");
     }
 

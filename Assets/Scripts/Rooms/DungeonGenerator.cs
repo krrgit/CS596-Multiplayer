@@ -72,8 +72,9 @@ public class DungeonGenerator : MonoBehaviour
                 
                 if (roomPrefab > RoomType.DNE)
                 {
-                    var go = PrefabUtility.InstantiatePrefab(rooms[(int)roomPrefab]).GameObject();
-                    go.transform.position = position;
+                    // var go = PrefabUtility.InstantiatePrefab(rooms[(int)roomPrefab]).GameObject();
+                    // go.transform.position = position;
+                    var go = Instantiate(rooms[(int)roomPrefab], position, quaternion.identity);
                     go.transform.parent = transform;
 
                     int pluggedDoors = GetPluggedDoors(i, j);
