@@ -16,7 +16,6 @@ public class BossFightManager : MonoBehaviour
 
     private void OnEnable()
     {
-
         enemyHealth.enemyTakeDamageDelegate += LastSegmentHit;
     }
 
@@ -29,13 +28,10 @@ public class BossFightManager : MonoBehaviour
     void Start()
     {
         hittableSegment = segments.Length - 1;
-        fireworks.SetActive(false);
-        // for (int i = 0; i < segments.Length; i++)
-        // {
-        //     segments[i].enabled = i == hittableSegment;
-        // }
+        fireworks.SetActive(false); // hide fireworks
     }
 
+    // Called when segment is hit, 
     IEnumerator SetLastSegmentToHittable()
     {
         segments[hittableSegment].GetComponent<MeshRenderer>().material = mat_hittable;
