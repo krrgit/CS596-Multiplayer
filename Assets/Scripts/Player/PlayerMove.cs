@@ -35,13 +35,12 @@ public class PlayerMove : NetworkBehaviour
             // gameObject.AddComponent<PlayerFaceDirection>().Init(model, dummyModel);
             return;
         }
-        transform.position = PlayerSpawnPointManager.Instance.GetSpawnPoint();
-        thisCamera.enabled = true;
     }
 
     private void Awake()
     {
-        
+        transform.position = PlayerSpawnPointManager.Instance.GetSpawnPoint();
+        thisCamera.enabled = true;
     }
 
     void Start()

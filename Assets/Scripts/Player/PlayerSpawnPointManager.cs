@@ -8,6 +8,7 @@ public class PlayerSpawnPointManager : NetworkBehaviour
 {
     [SerializeField] private Transform[] spawnPoints;
     [SerializeField] private NetworkVariable<int> netSpawnPoint;
+    [SerializeField] private int point;
     public static PlayerSpawnPointManager Instance;
 
     private void Awake()
@@ -21,23 +22,36 @@ public class PlayerSpawnPointManager : NetworkBehaviour
             Destroy(this);
         }
     }
+
+    public override void OnNetworkSpawn()
+    {
+        if (NetworkObject.IsOwner)
+        {
+            netSpawnPoint.Value = point;
+        }
+        else
+        {
+            point = netSpawnPoint.Value;
+            print("read spawn point: " + point);
+        }
+    }
+
     public Vector3 GetSpawnPoint()
     {
         if (NetworkObject.IsOwner)
         {
-            int current = netSpawnPoint.Value;
-            Vector3 position = spawnPoints[current++].position;
+            Vector3 position = spawnPoints[point++].position;
             
-            current = current >= spawnPoints.Length ? 0 : current;
-            netSpawnPoint.Value = current;
-            print("Update Spawn point");
+            point = point >= spawnPoints.Length ? 0 : point;
+            netSpawnPoint.Value = point;
+            print("Update Spawn point: " + netSpawnPoint.Value);
             return position;
         }
         else
         {
-            int current = netSpawnPoint.Value;
-            print("Don't Update Spawn Point");
-            return spawnPoints[current].position;
+            point = netSpawnPoint.Value;
+            print("Don't Update Spawn Point: " + netSpawnPoint.Value);
+            return spawnPoints[point].position;
         }
     }
 }
