@@ -38,20 +38,41 @@ public class PlayerSpawnPointManager : NetworkBehaviour
 
     public Vector3 GetSpawnPoint()
     {
+        return spawnPoints[point].position;
+        // if (NetworkObject.IsOwner)
+        // {
+        //     // Vector3 position = spawnPoints[point].position;
+        //     
+        //     // point = point >= spawnPoints.Length ? 0 : point;
+        //     // netSpawnPoint.Value = point;
+        //     print("Update Spawn point: " + netSpawnPoint.Value);
+        //     return spawnPoints[point].position;
+        // }
+        // else
+        // {
+        //     // point = netSpawnPoint.Value;
+        //     print("Don't Update Spawn Point: " + netSpawnPoint.Value);
+        //     return spawnPoints[point].position;
+        // }
+    }
+
+    public int GetIndex()
+    {
+        print("Get Index: " + point);
+        return point;
+    }
+
+    public void IncrementSpawnPoint()
+    {
         if (NetworkObject.IsOwner)
         {
-            Vector3 position = spawnPoints[point++].position;
-            
-            point = point >= spawnPoints.Length ? 0 : point;
+            point = netSpawnPoint.Value + 1;
+            point = point >= spawnPoints.Length ? spawnPoints.Length-1 : point;
             netSpawnPoint.Value = point;
-            print("Update Spawn point: " + netSpawnPoint.Value);
-            return position;
         }
         else
         {
             point = netSpawnPoint.Value;
-            print("Don't Update Spawn Point: " + netSpawnPoint.Value);
-            return spawnPoints[point].position;
         }
     }
 }

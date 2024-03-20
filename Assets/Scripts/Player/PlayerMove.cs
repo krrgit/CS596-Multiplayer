@@ -15,6 +15,11 @@ public class PlayerMove : NetworkBehaviour
     [SerializeField] private Transform model;
     [SerializeField] private Transform dummyModel;
     [SerializeField] private Animator animator;
+
+    [Header("Assets")] 
+    [SerializeField]private GameObject cape01;
+    [SerializeField]private GameObject cape02;
+    
     
     private float speed = 0;
     private Vector3 moveDirLerped;
@@ -41,11 +46,25 @@ public class PlayerMove : NetworkBehaviour
     {
         transform.position = PlayerSpawnPointManager.Instance.GetSpawnPoint();
         thisCamera.enabled = true;
+
+        // Server
+        if (PlayerSpawnPointManager.Instance.GetIndex() >= 1)
+        {
+            cape01.SetActive(false);
+            cape02.SetActive(true);
+        }
     }
 
     void Start()
     {
-        
+        // Client
+        if (PlayerSpawnPointManager.Instance.GetIndex() >= 1)
+        {
+            cape01.SetActive(false);
+            cape02.SetActive(true);
+        }
+
+        PlayerSpawnPointManager.Instance.IncrementSpawnPoint();
     }
 
     // Update is called once per frame
